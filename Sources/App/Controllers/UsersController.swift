@@ -6,10 +6,12 @@ struct UsersController: RouteCollection {
         let usersRoute = router.grouped("api", "users")
         usersRoute.post(User.self, use: createHandler)
         usersRoute.get(use: getAllUsers)
+        usersRoute.get(User.parameter, use: getUser)
         usersRoute.get("first", use: getFirstUser)
         usersRoute.get("search", use: searchUser)
         usersRoute.get("sorted", use: sortedUser)
         usersRoute.delete(use: deleteUser)
+        usersRoute.get(User.parameter, "acronyms", use: getAcronymHandler)
     }
 
     func createHandler(_ req: Request, user: User) throws -> Future<User> {
@@ -18,6 +20,10 @@ struct UsersController: RouteCollection {
 
     func getAllUsers(_ req: Request) throws -> Future<[User]> {
         return User.query(on: req).all()
+    }
+
+    func getUser(_ req: Request) throws -> Future<User> {
+        return try req.parameters.next(User.self)
     }
 
     func deleteUser(_ req: Request) throws -> Future<HTTPStatus> {
@@ -45,5 +51,11 @@ struct UsersController: RouteCollection {
 
     func sortedUser(_ req: Request) throws -> Future<[User]> {
         return User.query(on: req).sort(\.name, .ascending).all()
+    }
+
+    func getAcronymHandler(_ req: Request) throws -> Future<[Acronym]> {
+        return try req.parameters.next(User.self).flatMap(to: [Acronym].self, { user in
+            try user.acronyms.query(on: req).all()
+        })
     }
 }

@@ -13,6 +13,12 @@ final class User: Codable {
     }
 }
 
+extension User {
+    var acronyms: Children<User, Acronym> {
+        return children(\.userId)
+    }
+}
+
 extension User: PostgreSQLUUIDModel {}
 
 extension User: Content {}
