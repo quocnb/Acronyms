@@ -13,6 +13,9 @@ struct AcronymsController: RouteCollection {
         acronymsRoute.get("first", use: getFirstHandler)
         acronymsRoute.get("sorted", use: sortedHandler)
         acronymsRoute.get(Acronym.parameter, "user", use: getUserHandle)
+        acronymsRoute.post(Acronym.parameter, "categories", Category.parameter, use: addCategoryHandler)
+        acronymsRoute.get(Acronym.parameter, "categories", use: getCategoryHander)
+        acronymsRoute.delete(Acronym.parameter, "categories", Category.parameter, use: removeCategoryHandler)
     }
 
     func getAllHandler(_ req: Request) throws -> Future<[Acronym]> {
@@ -63,10 +66,35 @@ struct AcronymsController: RouteCollection {
     func sortedHandler(_ req: Request) throws -> Future<[Acronym]> {
         return Acronym.query(on: req).sort(\.short, .ascending).all()
     }
+}
 
+extension AcronymsController {
     func getUserHandle(_ req: Request) throws -> Future<User> {
         return try req.parameters.next(Acronym.self).flatMap(to: User.self, { (acronym) in
             acronym.user.get(on: req)
+        })
+    }
+}
+
+extension AcronymsController {
+    func addCategoryHandler(_ req: Request) throws -> Future<HTTPStatus> {
+        return try flatMap(
+            to: HTTPStatus.self,
+            req.parameters.next(Acronym.self),
+            req.parameters.next(Category.self), { (acronym, cateogry) in
+                return acronym.categories.attach(cateogry, on: req).transform(to: HTTPStatus.created)
+        })
+    }
+
+    func getCategoryHander(_ req: Request) throws -> Future<[Category]> {
+        return try req.parameters.next(Acronym.self).flatMap(to: [Category].self, { (acronym) in
+            return try acronym.categories.query(on: req).all()
+        })
+    }
+
+    func removeCategoryHandler(_ req: Request) throws -> Future<HTTPStatus> {
+        return try flatMap(to: HTTPStatus.self, req.parameters.next(Acronym.self), req.parameters.next(Category.self), { (acronym, category) in
+            acronym.categories.detach(category, on: req).transform(to: HTTPStatus.noContent)
         })
     }
 }
