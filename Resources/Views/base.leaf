@@ -28,6 +28,13 @@
                     <li class="nav-item #if(title == "Acronyms"){active}">
                         <a href="/" class="nav-link">Acronyms</a>
                     </li>
+                    <li class="nav-item #if(title == "All Categories"){active}">
+                        <a href="/categories" class="nav-link">All Categories</a>
+                    </li>
+                    <li class="nav-item #if(title == "Create An Acronym"){active}">
+                        #// 2
+                        <a href="/acronyms/create" class="nav-link">Create An Acronym</a>
+                    </li>
                 </ul>
             </div>
         </nav>
