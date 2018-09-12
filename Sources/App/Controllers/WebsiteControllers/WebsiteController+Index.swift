@@ -11,17 +11,17 @@ import Fluent
 
 extension WebsiteController {
     func indexHandler(_ req: Request) throws -> Future<View> {
-        // 1
         return Acronym.query(on: req)
             .all()
             .flatMap(to: View.self) { acronyms in
-                // 2
                 let acronymsData = acronyms.isEmpty ? nil : acronyms
                 let userLoggedIn = try req.isAuthenticated(User.self)
+                let showCookies = req.http.cookies["cookies-accepted"] == nil
                 let context = IndexContext(
                     title: WebsiteTitle.index,
                     acronyms: acronymsData,
-                    userLoggedIn: userLoggedIn
+                    userLoggedIn: userLoggedIn,
+                    showCookieMessage: showCookies
                 )
                 return try req.view().render("index", context)
         }
@@ -32,4 +32,5 @@ struct IndexContext: Encodable {
     let title: String
     let acronyms: [Acronym]?
     let userLoggedIn: Bool
+    let showCookieMessage: Bool
 }
