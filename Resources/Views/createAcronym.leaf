@@ -11,21 +11,6 @@
             <input type="text" name="long" class="form-control" id="long" #if(editing){value="#(acronym.long)"}/>
         </div>
         <div class="form-group">
-            <label for="userId">User</label>
-            <select name="userId" class="form-control" id="userId">
-                #for(user in users) {
-                    <option value="#(user.id)"
-                        #if(editing) {
-                            #if(acronym.userId == user.id) {
-                                selected
-                            }
-                        }>
-                        #(user.name)
-                    </option>
-                }
-            </select>
-        </div>
-        <div class="form-group">
             <label for="categories">Categories</label>
             <select name="categories[]" class="form-control"
                 id="categories" placeholder="Categories" multiple="multiple">

@@ -94,3 +94,11 @@ struct AdminUser: Migration {
 
     typealias Database = PostgreSQLDatabase
 }
+
+extension User: PasswordAuthenticatable {
+
+}
+
+extension User: SessionAuthenticatable {
+    
+}
