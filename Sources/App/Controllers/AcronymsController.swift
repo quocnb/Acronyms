@@ -26,7 +26,7 @@ struct AcronymsController: RouteCollection {
         tokenAuthGroup.put(Acronym.parameter, use: updateHandler)
         tokenAuthGroup.delete(Acronym.parameter, use: deleteHandler)
         tokenAuthGroup.post(Acronym.parameter, "categories", Category.parameter, use: addCategoryHandler)
-        tokenAuthGroup.post(Acronym.parameter, "categories", Category.parameter, use: removeCategoryHandler)
+        tokenAuthGroup.delete(Acronym.parameter, "categories", Category.parameter, use: removeCategoryHandler)
     }
 
     func getAllHandler(_ req: Request) throws -> Future<[Acronym]> {
@@ -101,9 +101,10 @@ extension AcronymsController {
     }
 
     func getCategoryHander(_ req: Request) throws -> Future<[Category]> {
-        return try req.parameters.next(Acronym.self).flatMap(to: [Category].self, { (acronym) in
+        let acronym = try req.parameters.next(Acronym.self)
+        return acronym.flatMap { (acronym) in
             return try acronym.categories.query(on: req).all()
-        })
+        }
     }
 
     func removeCategoryHandler(_ req: Request) throws -> Future<HTTPStatus> {
