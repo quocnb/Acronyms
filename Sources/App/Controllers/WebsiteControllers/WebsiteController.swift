@@ -8,6 +8,7 @@ enum WebsiteTitle {
     static let login = "Log In"
     static let createAcronym = "Create An Acronym"
     static let editAcronym = "Edit Acronym"
+    static let register = "Register"
 }
 
 struct WebsiteController: RouteCollection {
@@ -38,6 +39,11 @@ struct WebsiteController: RouteCollection {
         authSessionRoutes.get("login", use: loginHandler)
         authSessionRoutes.post(LoginPostData.self, at: "login", use: loginPostHandler)
 
+        // Logout
         authSessionRoutes.post("logout", use: logoutHandler)
+
+        // Register
+        authSessionRoutes.get("register", use: registerHandler)
+        authSessionRoutes.post(RegisterData.self, at: "register", use: registerPostHandler)
     }
 }
